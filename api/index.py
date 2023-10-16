@@ -2,7 +2,7 @@ from flask import Flask, request
 
 app = Flask(__name__)
 
-from scipy.spatial.distance import cosine
+# from scipy.spatial.distance import cosine
 import numpy as np
 import pandas as pd
 import json, time
@@ -20,6 +20,22 @@ top_movies = np.load( file_path + "top_movies.npy" )[:max_display_movies]
 
 reverse_mapping_id = { v:k for k, v in mapping_id.items() }
 each_movie_distances = dict()
+def correlation( u, v, centered=False):
+    if centered:
+        umu = np.average(u)
+        vmu = np.average(v)
+        u = u - umu
+        v = v - vmu
+    uv = np.average(u * v)
+    uu = np.average(np.square(u))
+    vv = np.average(np.square(v))
+    dist = 1.0 - uv / np.sqrt(uu * vv)
+    # Return absolute value to avoid small negative value due to rounding
+    return np.abs(dist)
+
+def cosine( u, v ):
+    return max(0, min(correlation(u, v, centered=False), 2.0))
+
 def get_cosine_distance( target ):
     global each_movie_distances
     try:
