@@ -10,7 +10,6 @@ import json, time
 file_path = "results/"
 import os
 print( os.listdir() )
-
 max_display_movies = 10
 movies = pd.read_csv( file_path + "movies.csv" ).set_index( "movieId" )
 vectors = np.load(  file_path + "movie_vectors.npy" )
@@ -52,8 +51,6 @@ def get_list( ):
 @app.route("/")
 def hello_world():
     return "<p>Hello, World!</p>"
-import scipy
-print(scipy.__version__)
 if __name__ == "__main__":
 	app.run(debug=True)
     
