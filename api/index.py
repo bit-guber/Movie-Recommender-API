@@ -11,7 +11,7 @@ file_path = "results/"
 import os
 print( os.listdir() )
 max_display_movies = 10
-movies = pd.read_csv( file_path + "movies.csv" ).set_index( "movieId" )
+movies = pd.read_csv( file_path + "movies.csv" ).set_index( "movieId" ).loc[:, "tmdbId" ].to_dict( )
 vectors = np.load(  file_path + "movie_vectors.npy" )
 mapping_id = None
 with open( file_path + "movie_id_to_vector_id.json", "r" ) as f:
@@ -48,11 +48,14 @@ def get_cosine_distance( target ):
         each_movie_distances[target] = distances
         return each_movie_distances[target]
 
+def look_up( items ):
+    return [ movies[i] for i in items ]
+
 @app.route( "/get-list", methods = ['POST'] )
 def get_list( ):
     viewed = request.get_json()["viewed"]
     if viewed is None :
-        return top_movies.tolist()
+        return look_up(top_movies.tolist())
     if len(viewed) == 0:
          return top_movies.tolist()
     cummalate = np.zeros( vectors.shape[0], dtype = np.float32 )
@@ -62,7 +65,7 @@ def get_list( ):
         cummalate += get_cosine_distance( target  )
     print( time.time() - start_time )
     viewed = set(viewed)
-    return [reverse_mapping_id[x] for x in np.argsort( cummalate ) if x not in viewed ][:max_display_movies]
+    return look_up([reverse_mapping_id[x] for x in np.argsort( cummalate ) if x not in viewed ][:max_display_movies])
 
 @app.route("/")
 def hello_world():
