@@ -7,11 +7,11 @@ import numpy as np
 import pandas as pd
 import json, time
 
-file_path = "results/"
+file_path = "resources/"
 import os
 print( os.listdir() )
 max_display_movies = 10
-movies = pd.read_csv( file_path + "movies.csv" ).set_index( "movieId" ).loc[:, "tmdbId" ].to_dict( )
+movies = pd.read_csv( file_path + "links.csv" ).set_index( "movieId" ).loc[:, "tmdbId" ].to_dict( )
 vectors = np.load(  file_path + "movie_vectors.npy" )
 mapping_id = None
 with open( file_path + "movie_id_to_vector_id.json", "r" ) as f:
