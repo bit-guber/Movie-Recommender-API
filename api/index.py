@@ -11,7 +11,8 @@ file_path = "resources/"
 import os
 print( os.listdir() )
 max_display_movies = 10
-movies = pd.read_csv( file_path + "links.csv", dtype = { "tmdbId":"str" } ).set_index( "movieId" ).loc[:, "tmdbId" ].to_dict( )
+movies = pd.read_csv( file_path + "links.csv", dtype = { "tmdbId":"str"} ).set_index( "movieId" ).loc[:, "tmdbId" ].to_dict( )
+reverse_movies = { v: k for k,v in movies.items() }
 vectors = np.load(  file_path + "movie_vectors.npy" )
 mapping_id = None
 with open( file_path + "movie_id_to_vector_id.json", "r" ) as f:
@@ -48,12 +49,15 @@ def get_cosine_distance( target ):
         each_movie_distances[target] = distances
         return each_movie_distances[target]
 
+def pre_look_up( items ):
+    return [reverse_movies[i] for i in items ]
+
 def look_up( items ):
     return [ movies[i] for i in items ]
 
 @app.route( "/get-list", methods = ['POST'] )
 def get_list( ):
-    viewed = request.get_json()["viewed"]
+    viewed = pre_look_up(request.get_json()["viewed"])
     if viewed is None :
         return look_up(top_movies.tolist())
     if len(viewed) == 0:
