@@ -53,9 +53,10 @@ def pre_processing( items ):
     return [reverse_movies[i] for i in items ]
 
 def post_processing( items ):
-    resp = Response( [ movies[i] for i in items ] )
-    resp.headers['Access-Control-Allow-Origin'] = '*'
-    return resp
+    # resp = Response(  )
+    # resp.headers['Access-Control-Allow-Origin'] = '*'
+    # return resp
+    return [ movies[i] for i in items ]
 
 @app.route( "/get-list", methods = ['POST'] )
 def get_list( ):
