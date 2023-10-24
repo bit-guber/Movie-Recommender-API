@@ -1,7 +1,8 @@
 from flask import Flask, request, Response
+# from werkzeug.middleware.profiler import ProfilerMiddleware
 
 app = Flask(__name__)
-
+# app.wsgi_app = ProfilerMiddleware(app.wsgi_app)
 # from scipy.spatial.distance import cosine
 import numpy as np
 import pandas as pd
@@ -21,6 +22,8 @@ top_movies = np.load( file_path + "top_movies.npy" )[:max_display_movies].tolist
 
 reverse_mapping_id = { v:k for k, v in mapping_id.items() } # { k:fittedMovieId, v:movieId }
 each_movie_distances = dict()
+from sklearn.metrics.pairwise import cosine_distances
+
 def correlation( u, v, centered=False):
     if centered:
         umu = np.average(u)
@@ -53,9 +56,6 @@ def pre_processing( items ):
     return [reverse_movies[i] for i in items ]
 
 def post_processing( items ):
-    # resp = Response(  )
-    # resp.headers['Access-Control-Allow-Origin'] = '*'
-    # return resp
     return [ movies[i] for i in items ]
 
 @app.route( "/get-list", methods = ['POST'] )
@@ -65,11 +65,12 @@ def get_list( ):
         return post_processing(top_movies)
     if len(viewed) == 0:
          return post_processing(top_movies)
-    cummalate = np.zeros( vectors.shape[0], dtype = np.float32 )
+    # cummalate = np.zeros( vectors.shape[0], dtype = np.float32 )
     viewed = [ mapping_id[x] for x in viewed ]
     start_time = time.time()
-    for target in viewed:
-        cummalate += get_cosine_distance( target  )
+    cummalate = cosine_distances( [vectors[x] for x in viewed] ,vectors ).sum( axis =1)
+    # for target in viewed:
+    #     cummalate += get_cosine_distance( target  )
     print( time.time() - start_time )
     viewed = set(viewed)
     return post_processing([reverse_mapping_id[x] for x in np.argsort( cummalate ) if x not in viewed ][:max_display_movies])
