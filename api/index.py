@@ -22,7 +22,7 @@ top_movies = np.load( file_path + "top_movies.npy" )[:max_display_movies].tolist
 
 reverse_mapping_id = { v:k for k, v in mapping_id.items() } # { k:fittedMovieId, v:movieId }
 each_movie_distances = dict()
-from sklearn.metrics.pairwise import cosine_distances
+# from sklearn.metrics.pairwise import cosine_distances
 
 def correlation( u, v, centered=False):
     if centered:
@@ -37,8 +37,22 @@ def correlation( u, v, centered=False):
     # Return absolute value to avoid small negative value due to rounding
     return np.abs(dist)
 
+from numpy import dot
+from numpy.linalg import norm
+maximum_dot = 0
+minimum_dot = 1
 def cosine( u, v ):
-    return max(0, min(correlation(u, v, centered=False), 2.0))
+    return (( dot(u,v)/(norm(u)*norm(v)) ) *-1) +1
+
+    # return max(0, min(correlation(u, v, centered=False), 2.0))
+def cosine_similarity(v1,v2):
+
+    temp = np.zeros( len(vectors), dtype = np.float32 )
+    for i in range(v1.shape[0]):
+        for j in range( v2.shape[0] ):
+            temp[j]+=cosine( v1[i], v2[j] ) 
+    return temp
+
 
 def get_cosine_distance( target ):
     global each_movie_distances
@@ -68,7 +82,13 @@ def get_list( ):
     # cummalate = np.zeros( vectors.shape[0], dtype = np.float32 )
     viewed = [ mapping_id[x] for x in viewed ]
     start_time = time.time()
-    cummalate = cosine_distances( [vectors[x] for x in viewed] ,vectors ).sum( axis =1)
+    # cummalate = cosine_distances( np.array([vectors[x] for x in viewed]) ,vectors )
+    cummalate = cosine_similarity( np.array([vectors[x] for x in viewed]) ,vectors )
+    print(cummalate.shape)
+    # cummalate=cummalate.sum( axis =0)
+    print(cummalate.shape)
+    print( ",max" , maximum_dot )
+    print( "min,", minimum_dot)
     # for target in viewed:
     #     cummalate += get_cosine_distance( target  )
     print( time.time() - start_time )
