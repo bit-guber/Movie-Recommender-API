@@ -1,4 +1,4 @@
-from flask import Flask, request, Response
+from flask import Flask, request#, Response
 # from werkzeug.middleware.profiler import ProfilerMiddleware
 
 app = Flask(__name__)
@@ -7,6 +7,7 @@ app = Flask(__name__)
 import numpy as np
 import pandas as pd
 import json, time
+from numpy.linalg import norm
 
 file_path = "resources/"
 import os
@@ -23,29 +24,13 @@ top_movies = np.load( file_path + "top_movies.npy" )[:max_display_movies].tolist
 reverse_mapping_id = { v:k for k, v in mapping_id.items() } # { k:fittedMovieId, v:movieId }
 each_movie_distances = dict()
 
-from numpy import dot
-from numpy.linalg import norm
 
-def cosine( u, v ):
-    s = np.matmul(u,v.T) #.reshape( 1, -1 )
-    print(s.shape)
-    n =norm(u,keepdims=True, axis =1)*norm(v,keepdims=True, axis =1).T
-    print( n.shape )
+def cosine_distance( u, v ):
+    s = np.matmul(u,v.T)
+    n = norm(u,keepdims=True, axis =1)*norm(v,keepdims=True, axis =1).T
     s = s / n
-    print(s.shape)
     s = ( s *-1) +1
-    print(s.shape)
-    return s.sum(axis = 0)#.reshape(-1)
-    # return (( dot(u,v)/(norm(u)*norm(v)) ) *-1) +1
-def cosine_similarity(v1,v2):
-    temp=  cosine( v1, v2) 
-    # temp = np.zeros( len(vectors), dtype = np.float32 )
-    # for i in range(v1.shape[0]):
-        # temp+=  cosine( v1[i], v2) 
-
-        # for j in range( v2.shape[0] ):
-        #     temp[j]+=cosine( v1[i], v2[j] ) 
-    return temp
+    return s.sum(axis = 0)
 
 def pre_processing( items ):
     return [reverse_movies[i] for i in items ]
@@ -60,15 +45,13 @@ def get_list( ):
         return post_processing(top_movies)
     if len(viewed) == 0:
          return post_processing(top_movies)
-    # cummalate = np.zeros( vectors.shape[0], dtype = np.float32 )
-    viewed = [ mapping_id[x] for x in viewed ]
+    viewed_ids = [ mapping_id[x] for x in viewed ]
+    viewed = np.array([ vectors[ x ] for x in viewed_ids ], dtype = np.float32)
     start_time = time.time()
-    # cummalate = cosine_distances( np.array([vectors[x] for x in viewed]) ,vectors )
-    cummalate = cosine_similarity( np.array([vectors[x] for x in viewed]) ,vectors )
+    cummalate = cosine_distance( viewed ,vectors )
     print(cummalate.shape)
     print( time.time() - start_time )
-    viewed = set(viewed)
-    return post_processing([reverse_mapping_id[x] for x in np.argsort( cummalate ) if x not in viewed ][:max_display_movies])
+    return post_processing([reverse_mapping_id[x] for x in np.argsort( cummalate ) if x not in viewed_ids ][:max_display_movies])
 
 @app.route("/")
 def hello_world():
