@@ -12,7 +12,7 @@ from numpy.linalg import norm
 file_path = "resources/"
 import os
 print( os.listdir() )
-max_display_movies = 10
+max_display_movies = 50
 movies = pd.read_csv( file_path + "links.csv", dtype = { "tmdbId":"str", "movieId":np.int32 } ).set_index( "movieId" ).loc[:, "tmdbId" ].to_dict( ) # { k:movieId , v:tmdbId }
 reverse_movies = { v: k for k,v in movies.items() } # { k:tmdbId, v:movieId }
 vectors = np.load(  file_path + "movie_vectors.npy" )
