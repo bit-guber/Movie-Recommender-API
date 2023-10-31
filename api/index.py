@@ -56,7 +56,7 @@ def get_list( ):
 from flask import send_file
 @app.route("/get_image")
 def get_default_poster():
-     return send_file("emptyPoster.jpg" )
+     return send_file("emptyPoster.webp" )
 
 @app.route("/")
 def hello_world():
