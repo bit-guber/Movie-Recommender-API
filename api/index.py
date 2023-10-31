@@ -53,6 +53,11 @@ def get_list( ):
     print( time.time() - start_time )
     return post_processing([reverse_mapping_id[x] for x in np.argsort( cummalate ) if x not in viewed_ids ][:max_display_movies])
 
+# from flask import send_file
+# @app.route("/get_image")
+# def get_default_poster():
+#      return send_file("emptyPoster.webp" )
+
 @app.route("/")
 def hello_world():
     return "<p>Hello, World!</p>"
