@@ -12,7 +12,7 @@ vectors = np.load(  file_path + "movie_vectors.npy" )
 mapping_id = None
 with open( file_path + "movie_id_to_vector_id.json", "r" ) as f:
     mapping_id = { int(k):int(v) for k,v in json.load( f ).items()} # { k:movieId, v:fittedMovieId }
-top_movies = np.load( file_path + "top_movies.npy" )[:max_display_movies].tolist() # top 100 movies of movieId
+top_movies = np.load( file_path + "top_movies.npy" ).tolist() # top 100 movies of movieId
 
 reverse_mapping_id = { v:k for k, v in mapping_id.items() } # { k:fittedMovieId, v:movieId }
 each_movie_distances = dict()
