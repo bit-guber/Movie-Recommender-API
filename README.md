@@ -1,6 +1,7 @@
 # Movie recommendation Engine
 
-This Project accomplish top 50 Movie suggest for user from previously liked movies with quick and efficiently as possible way.<br>
+This Project accomplish top 50 Movie suggest for user from previously liked movies with quick and efficiently as possible way.<br><br>
+Trained jupyter notebook [link](https://www.kaggle.com/bitguber/movie-recommended-vectors)<br><br>
 this project suggest from trained model embedding vectors for each movie that `live Application` [link](https://bit-guber-movie-recommender.vercel.app/). this only Backend API point made by [bit_guber](https://github.com/bit-guber/Portfolio) with Python + flask tools.
 
 ### It follows a few steps:
